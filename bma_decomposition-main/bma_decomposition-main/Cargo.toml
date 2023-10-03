@@ -1,0 +1,15 @@
+[package]
+name = "bma_decomposition"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = {version = "4.0.18", features = ["derive"]}
+image = "0.23.14"
+imageproc = "0.22.0"
+nalgebra = "0.31.3"
+spade = { git = "https://github.com/Stoeoef/spade.git" }
+rand = "0.8.5"
+stats-cli = "3.0.1"
