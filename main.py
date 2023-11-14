@@ -28,7 +28,7 @@ commande = "mkdir values"
 subprocess.run(commande, shell=True)
 
 # Go to the folder for the generation of the skeleton
-commande = "..\\compact-skel-2d"
+commande = "..\\compact-skel-2d-main"
 os.chdir(commande)
 
 # Compute the skeleton
