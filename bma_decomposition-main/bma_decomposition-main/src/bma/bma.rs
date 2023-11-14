@@ -177,11 +177,13 @@ impl bma {
 
             // if it's the point wasn't registered and is found in the edges
             let save_point = _ind.is_empty() && !ind1.is_empty();
+            //let save_point = ind_order[0]!=curr_ind[1] && !ind1.is_empty();
             if save_point {
                 ind_order.push(curr_ind[1]);
-                curr_ind = vec![bndy_edges_mut[ind1[0]][0], bndy_edges_mut[ind1[0]][1]];
-                if ind2[0] == 1 {
-                    curr_ind.reverse();
+                if ind2[0] == 0 {
+                    curr_ind = vec![bndy_edges_mut[ind1[0]][0], bndy_edges_mut[ind1[0]][1]];
+                } else {
+                    curr_ind = vec![bndy_edges_mut[ind1[0]][1], bndy_edges_mut[ind1[0]][0]];
                 }
                 bndy_edges_mut.remove(ind1[0]);
             } else {
@@ -190,7 +192,6 @@ impl bma {
                     temp_bndy.push(bndy_pts[ind_order[i] as usize]);
                 }
                 // Check for counterclockwiseness
-                // (not supposed to go in there with the code for the skeletton)
                 if !functions_vec::counterclockwiseness(&temp_bndy) {
                     temp_bndy.reverse();
                     ind_order.reverse();
@@ -241,44 +242,12 @@ impl bma {
                 comp += 1;
             }
         }
-        
-        let mut new_bndy_edges = bndy_edges.clone();
-        for i in 0..new_bndy_edges.len() {
-            let newind1 = functions_vec::find_vec(&allinds, bndy_edges[i][0]);
-            let newind2 = functions_vec::find_vec(&allinds, bndy_edges[i][1]);
-            new_bndy_edges[i] = Vector2::new(newind1[0] as i32, newind2[0] as i32);
-        }
 
-        let mut new_ind_bnd_pts: Vec<Vec<i32>> = Vec::new();
-        for i in 0..ind_bnd_pts.len() {
-            let mut newset: Vec<i32> = Vec::new();
-            for j in 0..ind_bnd_pts[i].len() {
-                let newind = functions_vec::find_vec(&allinds, ind_bnd_pts[i][j]);
-                newset.push(newind[0] as i32);
-            }
-            new_ind_bnd_pts.push(newset);
-        }
-
-        let mut new_bndy_pts = bndy_pts.clone();
-        for i in 0..bndy_pts.len() {
-            new_bndy_pts[i] = bndy_pts[allinds[i] as usize];
-        }
-
-        let mut new_isouter = isouter.clone();
-        for i in 0..isouter.len() {
-            new_isouter[i] = isouter[allinds[i] as usize];
-        }
-
-        let mut new_component = component.clone();
-        for i in 0..component.len() {
-            new_component[i] = component[allinds[i] as usize];
-        }
-
-        self.boundary_points = new_bndy_pts;
-        self.isouter = new_isouter;
-        self.component = new_component;
-        self.boundary_edges = new_bndy_edges;
-        self.index_bndry_points = new_ind_bnd_pts;
+        self.boundary_points = bndy_pts.clone();
+        self.isouter = isouter;
+        self.component = component;
+        self.boundary_edges = bndy_edges.clone();
+        self.index_bndry_points = ind_bnd_pts.clone();
 
         Ok(())
     }
@@ -336,7 +305,7 @@ impl bma {
             let mut pt_i_onloop = false;
             let oncomponent = self.component[self.index_bndry_points[i][0] as usize];
             for j in 1..self.index_bndry_points[i].len() {
-                pt_i_onloop = pt_i_onloop || !(self.component[self.index_bndry_points[i][j] as usize] == oncomponent);
+                pt_i_onloop = pt_i_onloop || (self.component[self.index_bndry_points[i][j] as usize] != oncomponent);
             }
             onloop.push(pt_i_onloop);
         }
@@ -1711,7 +1680,6 @@ impl bma {
                 let mut boundaries_toupdate: Vec<usize> = Vec::new();
                 for i in &ind_unburnt {
                     if burning_bma.is_exposed_handle(*i) {
-                        println!("is exposed handle");
                         (burning_ind, burning_bma) = self.start_to_burn_handle(wedf_edf, *i, &burning_ind, &burning_bma);
                         boundaries_toupdate.push(*i);
                     }
@@ -1947,7 +1915,6 @@ impl bma {
             is_eh = false;
         } else if comp_br.len() != 2 {
             // dangling branch or branch exposed both ways
-            println!("pas assez de comp : {:?}", comp_br);
             is_eh = false;
         } else if self.is_outer_handle(br) {
             // We need to check that no other branch on the loop is also an ExposedHandle.
@@ -2332,7 +2299,7 @@ impl bma {
 
         Ok(())
     }
- 
+    
 
     // COMPUTE ET AND ST
     fn calculate_et(&mut self) -> Result<(), Box<dyn std::error::Error>> {
