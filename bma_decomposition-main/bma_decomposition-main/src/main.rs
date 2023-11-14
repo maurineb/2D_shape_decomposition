@@ -23,12 +23,18 @@ struct Cli {
     skel_path: std::path::PathBuf,
     #[arg(default_value = "./output_files", long = "folder_results")]
     folder_results: std::path::PathBuf,
+    #[arg(default_value = "3", long = "mainclusts")] // the number of clusters you want to use in determining the main shape
+    mainclusts: usize,
+    #[arg(default_value = "2", long = "mainclustnum")] // the number of clusters from the resulting stage 1 clustering that you want to declare as the Main Shape
+    mainclustnum: usize,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::parse();
     let skel_path_str = args.skel_path.to_str().unwrap_or("");
     let folder_results_path = args.folder_results.to_str().unwrap_or("");
+    let mainclusts = args.mainclusts;
+    let mainclustnum = args.mainclustnum;
 
     let bnd_in_path_str = format!("{}{}", skel_path_str, "/bnd.txt");
     let nod_in_path_str = format!("{}{}", skel_path_str, "/nod.txt");
@@ -39,14 +45,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (ma_pts, ma_rad) = param_rust::nod_to_vec(&nod_in_path_str);
     let ma_edges = param_rust::edg_to_vec(&edg_in_path_str);
     let ind_bnd_pts = param_rust::del_to_vec(&del_in_path_str);
-
-    let mut bma = bma::bma::new(&bnd_pts, &bnd_edges, &ma_pts, &ma_edges, &ind_bnd_pts, &ma_rad);
-
+    
     // for every folder in format for the code in matlab
     let image_skel_path_str = format!("{}{}", skel_path_str, "/skeleton.png");
-    // for the rat
-    //let image_skel_path_str = "../../compact-skel-2d/ressources/rat.png";
     let matlab_version = false;
+
+    let mut bma = bma::bma::new(&bnd_pts, &bnd_edges, &ma_pts, &ma_edges, &ind_bnd_pts, &ma_rad);
 
     /**/
     // TO SHOW THE SHAPE AND MEDIAL AXIS
@@ -121,19 +125,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let image_hierarchy_first_path_str = format!("{}{}", folder_results_path, "/decomposition/hierarchy_parts_before_spread.png");
     let image_hierarchy_path_str = format!("{}{}", folder_results_path, "/decomposition/hierarchy_parts.png");
 
-    let (before_spread_hierlabel, centroids1, _centroids2, _optimal_k) = bma.hierarchy_wedf(3, 2, 8, 12);
+    let (before_spread_hierlabel, centroids1, _centroids2, _optimal_k) = bma.hierarchy_wedf(mainclusts, mainclustnum, 8, 12);
     bma.plot_wedf_hierarchy(&image_skel_path_str, &image_hierarchy_path_str);
     bma.plot_hierarchy(&image_skel_path_str, &image_hierarchy_first_path_str, &before_spread_hierlabel);
 
-
-    /*
-    let image_out = format!("{}{}", folder_results_path, "/test.png");
-    let mut test_bma = bma.clone();
-    test_bma.medial_points.clear();
-    test_bma.medial_points = vec![Vector2::new(12.0, 45.0), Vector2::new(26.0, 110.0), Vector2::new(137.0, 110.0), Vector2::new(112.0, 203.0)];
-    test_bma.test(&image_skel_path_str, &image_out);
-    */
-    /**/
     
     // TO SHOW THE TRUNKS
     bma.shape_details_hierarchy();
