@@ -32,7 +32,7 @@ commande = "..\\compact-skel-2d-main\\compact-skel-2d-main"
 os.chdir(commande)
 
 # Compute the skeleton
-commande = "cargo run --release -- --imgin ..\\" + image_path + " --imgout ..\\results\\skeleton\\skeleton.png" + " --epsilon " + epsilon + " --nodout ..\\results\\skeleton\\nod.txt --edgout ..\\results\\skeleton\\edg.txt --delout ..\\results\\skeleton\\del.txt --bndout ..\\results\\skeleton\\bnd.txt" 
+commande = "cargo run --release -- --imgin ..\\..\\" + image_path + " --imgout ..\\..\\results\\skeleton\\skeleton.png" + " --epsilon " + epsilon + " --nodout ..\\..\\results\\skeleton\\nod.txt --edgout ..\\..\\results\\skeleton\\edg.txt --delout ..\\..\\results\\skeleton\\del.txt --bndout ..\\..\\results\\skeleton\\bnd.txt" 
 subprocess.run(commande, shell=True)
 
 # Go to the folder for the decomposition
