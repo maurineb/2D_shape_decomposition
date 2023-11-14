@@ -36,7 +36,7 @@ commande = "cargo run --release -- --imgin ..\\" + image_path + " --imgout ..\\r
 subprocess.run(commande, shell=True)
 
 # Go to the folder for the decomposition
-commande = "..\\bma_decomposition-main\\bma_decomposition-main"
+commande = "..\\..\\bma_decomposition-main\\bma_decomposition-main"
 os.chdir(commande)
 
 # Compute the decomposition
