@@ -28,7 +28,7 @@ commande = "mkdir values"
 subprocess.run(commande, shell=True)
 
 # Go to the folder for the generation of the skeleton
-commande = "..\\compact-skel-2d-main"
+commande = "..\\compact-skel-2d-main\\compact-skel-2d-main"
 os.chdir(commande)
 
 # Compute the skeleton
@@ -36,7 +36,7 @@ commande = "cargo run --release -- --imgin ..\\" + image_path + " --imgout ..\\r
 subprocess.run(commande, shell=True)
 
 # Go to the folder for the decomposition
-commande = "..\\decomposition\\bma_decomposition"
+commande = "..\\bma_decomposition-main\\bma_decomposition-main"
 os.chdir(commande)
 
 # Compute the decomposition
